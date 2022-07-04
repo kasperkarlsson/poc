@@ -1,0 +1,54 @@
+<html>
+<input id="host" value="http://127.0.0.1"/> Target<br/>
+<input id="minPort" size="5" value="7800"/> Min port<br/>
+<input id="maxPort" size="5" value="8100"/> Max port<br/>
+<input id="timeout" size="4" value="1000"/> Timeout (ms)<br/>
+<button onclick="portScan()">Request</button> <button onclick="clearOutput()">Clear</button>
+<div id="output" />
+<script>
+
+output = document.getElementById("output");
+
+function writeOutput(text) {
+	output.innerHTML += text + "<br>";
+}
+
+function clearOutput() {
+	output.innerHTML = "";
+}
+
+function tryPort(host, port, timeout) {
+	url = host + ":" + port;
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.timeout = timeout;
+    xhr.onload = function () {
+		writeOutput("<b>Open port (onload)</b> " + port);
+    };
+    xhr.ontimeout = function (e) {
+        //writeOutput("Timeout");
+    };
+	xhr.onerror = function (e) {
+		writeOutput("<b>Open port (onerror)</b> " + port);
+	}
+    xhr.send();
+}
+
+function portScan() {
+	minPort = parseInt(document.getElementById("minPort").value, 10);
+	maxPort = parseInt(document.getElementById("maxPort").value, 10);
+	timeout = parseInt(document.getElementById("timeout").value, 10);
+	host = document.getElementById("host").value;
+	
+	writeOutput("Scanning " + host + " ports " + minPort + "-" + maxPort);
+	for (port=minPort; port<maxPort; port++) {
+		tryPort(host, port, timeout);
+	}
+	writeOutput("All sent");
+	
+	setTimeout(function(){
+		writeOutput("----- Timeout end -----");
+	}, timeout);
+}
+</script>
+</html>
