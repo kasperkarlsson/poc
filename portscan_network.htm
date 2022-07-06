@@ -10,11 +10,13 @@ https://www-archive.mozilla.org/projects/netlib/portbanning#portlist
 
 -->
 <html>
-<input id="host" value="127.0.0.1"/> Target<br/>
-<input id="minPort" size="5" value="7800"/> Min port<br/>
-<input id="maxPort" size="5" value="8100"/> Max port<br/>
+<input id="host" value="192.168.0.x"/> Target (<i>x</i> indicates bruteforce index)<br/>
+<input id="minX" size="5" value="2"/> Min <i>x</i><br/>
+<input id="maxX" size="5" value="100"/> Max <i>x</i><br/>
+<input id="ports" value="80,443,8000,8080,8443"/> Ports (comma delimited)<br/>
 <input id="timeout" size="4" value="1000"/> Timeout (ms)<br/>
 <button onclick="portScan()">Request</button> <button onclick="clearOutput()">Clear</button>
+<br />
 <div id="output" />
 <script>
 
@@ -39,9 +41,7 @@ function tryPort(host, port, timeout) {
 		// Open port (CORS allowed)
 		writeOutput(target);
     };
-    xhr.ontimeout = function (e) {
-        //writeOutput("Timeout");
-    };
+    xhr.ontimeout = function (e) {};
 	xhr.onerror = function (e) {
 		// Open port
 		writeOutput(target);
@@ -50,14 +50,19 @@ function tryPort(host, port, timeout) {
 }
 
 function portScan() {
-	let minPort = parseInt(document.getElementById("minPort").value, 10);
-	let maxPort = parseInt(document.getElementById("maxPort").value, 10);
+	let minX = parseInt(document.getElementById("minX").value, 10);
+	let maxX = parseInt(document.getElementById("maxX").value, 10);
+	let ports = document.getElementById("ports").value.split(",").map(x => parseInt(x, 10))
 	let timeout = parseInt(document.getElementById("timeout").value, 10);
 	let host = document.getElementById("host").value;
 	
-	writeOutput("\nScanning " + host + ", ports " + minPort + "-" + maxPort + ", timeout " + timeout + " ms\n");
-	for (port=minPort; port<maxPort; port++) {
-		tryPort(host, port, timeout);
+	writeOutput("\nScanning " + host.replace("x", minX + "-" + maxX) + ", ports [" + ports + "], timeout " + timeout + " ms\n");
+	for (i=minX; i<maxX; i++) {
+		let currentHost = host.replace("x", i);
+		for (portIndex=0; portIndex<ports.length; portIndex++) {
+			let port = ports[portIndex];
+			tryPort(currentHost, port, timeout);
+		}
 	}
 	//writeOutput("All sent");
 	
